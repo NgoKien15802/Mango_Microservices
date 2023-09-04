@@ -5,8 +5,6 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Mango.Services.CouponAPI.Models;
 
-
-[Table("Coupon")]
 public partial class Coupon
 {
     [Key]

@@ -11,9 +11,9 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Mango.Services.CouponAPI.Migrations
 {
-    [DbContext(typeof(MangoContext))]
-    [Migration("20230901044359_initMigrations2")]
-    partial class initMigrations2
+    [DbContext(typeof(AppDbContext))]
+    [Migration("20230904133556_init_coupon")]
+    partial class init_coupon
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -46,7 +46,7 @@ namespace Mango.Services.CouponAPI.Migrations
 
                     b.HasKey("CouponId");
 
-                    b.ToTable("Coupon");
+                    b.ToTable("Coupons");
                 });
 #pragma warning restore 612, 618
         }

@@ -4,16 +4,19 @@ using Mango.Services.CouponAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
 namespace Mango.Services.CouponAPI.Migrations
 {
-    [DbContext(typeof(MangoContext))]
-    partial class MangoContextModelSnapshot : ModelSnapshot
+    [DbContext(typeof(AppDbContext))]
+    [Migration("20230904133843_init_coupon2")]
+    partial class init_coupon2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -43,7 +46,23 @@ namespace Mango.Services.CouponAPI.Migrations
 
                     b.HasKey("CouponId");
 
-                    b.ToTable("Coupon", (string)null);
+                    b.ToTable("Coupons");
+
+                    b.HasData(
+                        new
+                        {
+                            CouponId = 1,
+                            CouponCode = "PGG01",
+                            DiscountAmount = 0.0,
+                            MinAmount = 0
+                        },
+                        new
+                        {
+                            CouponId = 2,
+                            CouponCode = "PGG02",
+                            DiscountAmount = 0.0,
+                            MinAmount = 0
+                        });
                 });
 #pragma warning restore 612, 618
         }

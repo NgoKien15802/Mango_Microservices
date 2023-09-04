@@ -13,13 +13,14 @@ namespace Mango.Services.CouponAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class CouponAPIController : ControllerBase
     {
-        private readonly MangoContext _context;
+        private readonly AppDbContext _context;
         private readonly ResponsDTO _responsDTO;
         private readonly IMapper _mapper;
 
-        public CouponAPIController(MangoContext context, IMapper mapper)
+        public CouponAPIController(AppDbContext context, IMapper mapper)
         {
             _context = context;
             _mapper = mapper;
@@ -27,6 +28,7 @@ namespace Mango.Services.CouponAPI.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public ResponsDTO Get()
         {
             try
