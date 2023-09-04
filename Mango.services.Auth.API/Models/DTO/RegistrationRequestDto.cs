@@ -18,6 +18,5 @@ namespace Mango.Services.AuthAPI.Models.DTO
 
         public string? Role { get; set; }
 
-        public string? Provider { get; set; }
     }
 }

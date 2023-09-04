@@ -65,9 +65,13 @@ namespace Mango.Services.AuthAPI.Services
             {
                 return new LoginResponseDto() { User = null, Token = "" };
             }
+            
+
+            // kiểm tra confirm email chưa?
 
             // tạo token
-            var token = _jwtTokenGenerator.GenerateToken(user);
+            var roles = await _userManager.GetRolesAsync(user);
+            var token = _jwtTokenGenerator.GenerateToken(user, roles);
 
             UserDto userDTO = new()
             {
@@ -92,28 +96,23 @@ namespace Mango.Services.AuthAPI.Services
 
             ApplicationUser user = new()
             {
-                UserName = registrationRequestDto.Email,
-                Email = registrationRequestDto.Email,
-                NormalizedUserName = registrationRequestDto.Name.ToUpper(),
-                Name = registrationRequestDto.Name,
-                PhoneNumber = registrationRequestDto.PhoneNumber,
+                UserName = registrationRequestDto.Email.ToLower(),
+                Email = registrationRequestDto.Email.ToLower(),
+                NormalizedUserName = registrationRequestDto.Name.ToLower(),
+                Name = registrationRequestDto.Name.ToLower(),
+                PhoneNumber = registrationRequestDto.PhoneNumber.ToLower(),
             };
             try
             {
                 var result = await _userManager.CreateAsync(user, registrationRequestDto.Password);
                 if (result.Succeeded)
                 {
-                    var userToReturn = _db.ApplicationUsers.First(u => u.UserName == registrationRequestDto.Email);
-                    var userDto = new ApplicationUser
-                    {
-                        Email = userToReturn.Email.ToLower(),
-                        Name = userToReturn.Name.ToLower(),
-                        PhoneNumber = userToReturn.PhoneNumber
-                    };
-                    await this.AssignRole(userToReturn.Email, SD.UserRole);
+                    /*var userToReturn = _db.ApplicationUsers.First(u => u.UserName == registrationRequestDto.Email);
+                    await this.AssignRole(userToReturn.Email,  !string.IsNullOrEmpty(registrationRequestDto.Role) ? registrationRequestDto.Role :  SD.UserRole);*/
+                    await _userManager.AddToRoleAsync(user, !string.IsNullOrEmpty(registrationRequestDto.Role) ? registrationRequestDto.Role : SD.UserRole);
                     try
                     {
-                        if (await SendConfirmEMailAsync(userDto))
+                        if (await SendConfirmEMailAsync(user))
                         {
                             return "";
                         }
@@ -140,16 +139,10 @@ namespace Mango.Services.AuthAPI.Services
             }
         }
 
-
-
-       
-
         private async Task<bool> CheckEmailExistsAsync(string email)
         {
             return await _db.ApplicationUsers.AnyAsync(x => x.Email == email.ToLower());
         }
-
-
        
         public async Task<bool> SendConfirmEMailAsync(ApplicationUser user)
         {
@@ -227,17 +220,17 @@ namespace Mango.Services.AuthAPI.Services
           "userId": "1027020745093989",
           "provider": "Facebook"
         }*/
-    public async Task<bool> FacebookValidatedAsync(string accessToken, string userId)
-        {
-            var facebookKeys = _config["Facebook:AppId"] + "|" + _config["Facebook:AppSecret"];
-            var fbResult = await _facebookHttpClient.GetFromJsonAsync<FacebookResultDto>($"debug_token?input_token={accessToken}&access_token={facebookKeys}");
-
-            if (fbResult == null || fbResult.Data.Is_Valid == false || !fbResult.Data.User_Id.Equals(userId))
+        public async Task<bool> FacebookValidatedAsync(string accessToken, string userId)
             {
-                return false;
-            }
+                var facebookKeys = _config["Facebook:AppId"] + "|" + _config["Facebook:AppSecret"];
+                var fbResult = await _facebookHttpClient.GetFromJsonAsync<FacebookResultDto>($"debug_token?input_token={accessToken}&access_token={facebookKeys}");
 
-            return true;
+                if (fbResult == null || fbResult.Data.Is_Valid == false || !fbResult.Data.User_Id.Equals(userId))
+                {
+                    return false;
+                }
+
+                return true;
+            }
         }
-    }
 }

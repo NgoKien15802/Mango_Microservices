@@ -51,11 +51,11 @@ namespace Mango.Services.AuthAPI.Controllers
             {
                 return Unauthorized("You have been locked out");
             }
-
+            var roles = await _userManager.GetRolesAsync(user);
             return Ok(new LoginResponseDto()
             {
                 User = userDto,
-                Token = _jwtTokenGenerator.GenerateToken(user)
+                Token = _jwtTokenGenerator.GenerateToken(user, roles)
             });
         }
 
@@ -99,8 +99,10 @@ namespace Mango.Services.AuthAPI.Controllers
              
             var user = await _userManager.Users.FirstOrDefaultAsync(x => x.UserName == model.UserId);
             if (user == null) return Unauthorized("Unable to find your account");
+
+            var roles = await _userManager.GetRolesAsync(user);
             // tạo token
-            var token = _jwtTokenGenerator.GenerateToken(user);
+            var token = _jwtTokenGenerator.GenerateToken(user, roles);
 
             UserDto userDTO = new()
             {
@@ -226,7 +228,7 @@ namespace Mango.Services.AuthAPI.Controllers
                 var decodedTokenBytes = WebEncoders.Base64UrlDecode(model.Token);
                 var decodedToken = Encoding.UTF8.GetString(decodedTokenBytes);
 
-                var result = await _userManager.ConfirmEmailAsync(user, model.Token);
+                var result = await _userManager.ConfirmEmailAsync(user, decodedToken);
                 if (result.Succeeded)
                 {
                     return Ok(new JsonResult(new { title = "Email confirmed", message = "Your email address is confirmed. You can login now" }));

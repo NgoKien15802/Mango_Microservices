@@ -24,13 +24,21 @@ namespace Mango.Services.AuthAPI.Services
                  .WithTo(new SendContact(emailSend.To))
                  .Build();
 
-            var response = await client.SendTransactionalEmailAsync(email);
-            if (response.Messages != null)
+            try
             {
-                if (response.Messages[0].Status == "success")
+                var response = await client.SendTransactionalEmailAsync(email);
+                if (response.Messages != null)
                 {
-                    return true;
+                    if (response.Messages[0].Status == "success")
+                    {
+                        return true;
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                throw;
             }
 
             return false;
