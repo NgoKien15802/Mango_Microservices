@@ -1,6 +1,7 @@
 ﻿using Mailjet.Client.Resources;
 using Mango.Services.AuthAPI.Models;
 using Mango.Services.AuthAPI.Models.DTO;
+using Mango.Services.AuthAPI.RabbitMQSender;
 using Mango.Services.AuthAPI.Services;
 using Mango.Services.AuthAPI.Services.IServices;
 using Microsoft.AspNetCore.Authorization;
@@ -24,14 +25,19 @@ namespace Mango.Services.AuthAPI.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         protected ResponseDto _response;
         private readonly IJwtTokenGenerator _jwtTokenGenerator;
+        private readonly IRabbitMQAuthMessageSender _rabbitMQAuthMessageSender;
+        private readonly IConfiguration _config;
 
         public AuthAPIController(IAuthService authService,
-            UserManager<ApplicationUser> userManager, IJwtTokenGenerator jwtTokenGenerator)
+            UserManager<ApplicationUser> userManager, IJwtTokenGenerator jwtTokenGenerator, IRabbitMQAuthMessageSender rabbitMQAuthMessageSender, IConfiguration configuration)
         {
             _authService = authService;
             _jwtTokenGenerator = jwtTokenGenerator;
             _userManager =userManager;
             _response = new();
+            _rabbitMQAuthMessageSender = rabbitMQAuthMessageSender;
+            _config = configuration;
+
         }
 
         [Authorize]
@@ -183,6 +189,7 @@ namespace Mango.Services.AuthAPI.Controllers
                 _response.Message = errorMessage;
                 return BadRequest(_response);
             }
+            _rabbitMQAuthMessageSender.SendMessage(model.Email, _config.GetValue<string>("TopicAndQueueNames:RegisterUserQueue"));
             return Ok();
         }
 

@@ -24,9 +24,10 @@ namespace Mango.Services.AuthAPI.Services
         private readonly HttpClient _facebookHttpClient;
         private readonly EmailService _emailService;
         private readonly IConfiguration _config;
+        private readonly ITokenProvider _tokenProvider;
 
         public AuthService(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager,  AppDBContext db, IJwtTokenGenerator jwtTokenGenerator, SignInManager<ApplicationUser> signInManager, EmailService emailService,
-            IConfiguration config)
+            IConfiguration config, ITokenProvider tokenProvider)
         {
             _userManager = userManager;
             _roleManager = roleManager;
@@ -39,6 +40,7 @@ namespace Mango.Services.AuthAPI.Services
             {
                 BaseAddress = new Uri("https://graph.facebook.com")
             };
+            _tokenProvider = tokenProvider;
         }
 
         public async Task<bool> AssignRole(string email, string roleName)
@@ -73,6 +75,9 @@ namespace Mango.Services.AuthAPI.Services
             var roles = await _userManager.GetRolesAsync(user);
             var token = _jwtTokenGenerator.GenerateToken(user, roles);
 
+          
+
+            _tokenProvider.SetToken(token);
             UserDto userDTO = new()
             {
                 Email = user.Email,
@@ -110,7 +115,7 @@ namespace Mango.Services.AuthAPI.Services
                     /*var userToReturn = _db.ApplicationUsers.First(u => u.UserName == registrationRequestDto.Email);
                     await this.AssignRole(userToReturn.Email,  !string.IsNullOrEmpty(registrationRequestDto.Role) ? registrationRequestDto.Role :  SD.UserRole);*/
                     await _userManager.AddToRoleAsync(user, !string.IsNullOrEmpty(registrationRequestDto.Role) ? registrationRequestDto.Role : SD.UserRole);
-                    try
+                   /* try
                     {
                         if (await SendConfirmEMailAsync(user))
                         {
@@ -122,7 +127,7 @@ namespace Mango.Services.AuthAPI.Services
                     catch (Exception)
                     {
                         return "Failed to send email. Please contact admin";
-                    }
+                    }*/
                     return "";
                 }
                 else

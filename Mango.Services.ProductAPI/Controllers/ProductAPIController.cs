@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Data;
 using System.Security.Cryptography.Xml;
 
-namespace Mango.Services.CouponAPI.Controllers
+namespace Mango.Services.ProductAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

@@ -1,5 +1,7 @@
-﻿using Mango.Services.AuthAPI.Data;
+﻿using Mango.Services.AuthAPI;
+using Mango.Services.AuthAPI.Data;
 using Mango.Services.AuthAPI.Models;
+using Mango.Services.AuthAPI.RabbitMQSender;
 using Mango.Services.AuthAPI.Services;
 using Mango.Services.AuthAPI.Services.IServices;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -69,6 +71,15 @@ modelBuilder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateAudience = false
         };
     });
+/*    // Thêm middleware xử lý cookies
+    .AddCookie("Cookies", options =>
+    {
+        // Cấu hình tên của cookie chứa token
+        options.Cookie.Name = SD.TokenCookie;
+        // Các cấu hình khác (HttpOnly, Expire, SameSite...) nếu cần
+    });*/
+
+
 
 
 /*modelBuilder.Services.AddAuthentication()
@@ -93,13 +104,16 @@ modelBuilder.Services.AddControllers();
 
 // DI
 modelBuilder.Services.AddScoped<IAuthService, AuthService>();
+modelBuilder.Services.AddScoped<ITokenProvider, TokenProvider>();
 modelBuilder.Services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
 modelBuilder.Services.AddScoped<EmailService>();
+modelBuilder.Services.AddScoped<IRabbitMQAuthMessageSender, RabbitMQAuthMessageSender>();
 
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 modelBuilder.Services.AddEndpointsApiExplorer();
 modelBuilder.Services.AddSwaggerGen();
+
 
 var app = modelBuilder.Build();
 
