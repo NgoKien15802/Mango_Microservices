@@ -81,6 +81,7 @@ namespace Mango.Services.ShoppingCartAPI.Controllers
             return _response;
         }
 
+
         [HttpPost("ApplyCoupon")]
         public async Task<object> ApplyCoupon([FromBody] CartDto cartDto)
         {
@@ -101,7 +102,6 @@ namespace Mango.Services.ShoppingCartAPI.Controllers
         }
 
 
-
         [HttpPost("EmailCartRequest")]
         public async Task<object> EmailCartRequest([FromBody] CartDto cartDto)
         {
@@ -118,9 +118,6 @@ namespace Mango.Services.ShoppingCartAPI.Controllers
             }
             return _response;
         }
-
-
-
 
 
         [HttpPost("CartUpsert")]

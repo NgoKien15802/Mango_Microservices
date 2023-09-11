@@ -1,4 +1,6 @@
-﻿using System.Text;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace Mango.GatewaySolution.Extensions
 {
@@ -6,7 +8,6 @@ namespace Mango.GatewaySolution.Extensions
     {
         public static WebApplicationBuilder AddAppAuthetication(this WebApplicationBuilder builder)
         {
-
             var settingsSection = builder.Configuration.GetSection("ApiSettings");
 
             var secret = settingsSection.GetValue<string>("Secret");

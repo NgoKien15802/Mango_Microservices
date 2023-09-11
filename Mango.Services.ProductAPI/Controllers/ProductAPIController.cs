@@ -29,7 +29,6 @@ namespace Mango.Services.ProductAPI.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "Admin")]
         public ResponsDTO Get()
         {
             try
@@ -66,6 +65,7 @@ namespace Mango.Services.ProductAPI.Controllers
 
 
         [HttpPost]
+        [Authorize(Roles = SD.AdminRole)]
         public ResponsDTO Post([FromBody] ProductDto couponDto)
         {
             try
@@ -85,6 +85,7 @@ namespace Mango.Services.ProductAPI.Controllers
         }
 
         [HttpPut]
+        [Authorize(Roles = SD.AdminRole)]
         public ResponsDTO Put([FromBody] ProductDto couponDto)
         {
             try
@@ -106,6 +107,7 @@ namespace Mango.Services.ProductAPI.Controllers
 
         [HttpDelete]
         [Route("{id:int}")]
+        [Authorize(Roles = SD.AdminRole)]
         public ResponsDTO Delete(int id)
         {
             try
