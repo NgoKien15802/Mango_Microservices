@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Mango.Services.ShoppingCartAPI.Utility;
+using Mango.MessageBus;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,6 +32,10 @@ builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<BackendApiAuthenticationHttpClientHandler>();
 builder.Services.AddScoped<ICouponService, CouponService>();
+builder.Services.AddScoped<IMessageBus, MessageBus>();
+
+
+
 // thêm một HttpMessageHandler tên "BackendApiAuthenticationHttpClientHandler" vào pipeline của HttpClient
 // nó sẽ tự động thực hiện việc xác thực bằng cách sử dụng BackendApiAuthenticationHttpClientHandler để thêm thông tin xác thực vào yêu cầu HTTP
 builder.Services.AddHttpClient("Product", u => u.BaseAddress =

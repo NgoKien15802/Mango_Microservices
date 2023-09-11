@@ -29,14 +29,14 @@ namespace Mango.Services.AuthAPI.RabbitMQSender
                 using var channel = _connection.CreateModel();
 
                 // có kênh -> tạo queue
-                channel.QueueDeclare(queueName);
+                channel.QueueDeclare(queueName,false,false,false,null);
 
                 // lấy ra đc từ bên kia gửi
                 var json = JsonConvert.SerializeObject(message);
                 var body = Encoding.UTF8.GetBytes(json);
 
                 // có kênh rồi thì công bố gửi body đến queue có tên là queueName
-                channel.BasicPublish(exchange: "", routingKey: queueName, body: body);
+                channel.BasicPublish(exchange: "", routingKey: queueName, null,body: body);
             }
 
         }
